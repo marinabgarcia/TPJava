@@ -66,7 +66,7 @@ public class Controller {
 				// Vaciar los valores de auto en los componentes de la interfaz
 				formulario.getLamina().getId().setValue(null);
 				formulario.getLamina().getAnio().setValue(null);
-				formulario.getLamina().getCosto().setText("");
+				formulario.getLamina().getCosto().setValue("");
 				formulario.getLamina().getMarca().setSelectedItem("");
 				formulario.getLamina().getModelo().setText("");
 				formulario.getLamina().getPropietario().setText("");
@@ -84,27 +84,32 @@ public class Controller {
 			public void actionPerformed(ActionEvent actionEvent) {
 				try {
 					// Obtengo el id de la fila seleccionada en la tabla
-					Long id = (Long) marcoPrincipal.getLamina().getTablaAutos().getModel()
-							.getValueAt(marcoPrincipal.getLamina().getTablaAutos().getSelectedRow(), 0);
-					// Obtengo el auto que corresponde con ese id
-					Auto autoAModificar;
-					autoAModificar = AUTO_DAO.getOne(id);
-					// Cargar los valores de auto en los componentes de la
-					// interfaz
-					formulario.getLamina().getId().setValue(autoAModificar.getId());
-					formulario.getLamina().getAnio().setValue(autoAModificar.getAnio());
-					formulario.getLamina().getCosto().setText(autoAModificar.getCosto().toString());
-					formulario.getLamina().getMarca().setSelectedItem(autoAModificar.getMarca());
-					formulario.getLamina().getModelo().setText(autoAModificar.getModelo());
-					formulario.getLamina().getPropietario().setText(autoAModificar.getPropietario());
-					if (autoAModificar.getPrimeraMano())
-						formulario.getLamina().getPrimeraManoTrue().setSelected(true);
-					else
-						formulario.getLamina().getPrimeraManoTrue().setSelected(false);
+					if (marcoPrincipal.getLamina().getTablaAutos().getSelectedRow() != -1) {
+						Long id = (Long) marcoPrincipal.getLamina().getTablaAutos().getModel()
+								.getValueAt(marcoPrincipal.getLamina().getTablaAutos().getSelectedRow(), 0);
 
-					// Hago visible el marco
-					formulario.setVisible(true);
-					formulario.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+						// Obtengo el auto que corresponde con ese id
+						Auto autoAModificar;
+						autoAModificar = AUTO_DAO.getOne(id);
+						// Cargar los valores de auto en los componentes de la
+						// interfaz
+						formulario.getLamina().getId().setValue(autoAModificar.getId());
+						formulario.getLamina().getAnio().setValue(autoAModificar.getAnio());
+						formulario.getLamina().getCosto().setValue(autoAModificar.getCosto());
+						formulario.getLamina().getMarca().setSelectedItem(autoAModificar.getMarca());
+						formulario.getLamina().getModelo().setText(autoAModificar.getModelo());
+						formulario.getLamina().getPropietario().setText(autoAModificar.getPropietario());
+						if (autoAModificar.getPrimeraMano())
+							formulario.getLamina().getPrimeraManoTrue().setSelected(true);
+						else
+							formulario.getLamina().getPrimeraManoTrue().setSelected(false);
+
+						// Hago visible el marco
+						formulario.setVisible(true);
+						formulario.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+					} else
+						JOptionPane.showMessageDialog(formulario, "Debe seleccionar una casilla.", "Advertencia",
+								JOptionPane.WARNING_MESSAGE);
 				} catch (SQLException e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(formulario, "Ha ocurrido un error interno.", "Error",
@@ -118,6 +123,7 @@ public class Controller {
 		actionListenerBotonEliminar = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				try {
+					if (marcoPrincipal.getLamina().getTablaAutos().getSelectedRow() != -1) {
 					// Obtengo el id de la fila seleccionada en la tabla
 					Long id = (Long) marcoPrincipal.getLamina().getTablaAutos().getModel()
 							.getValueAt(marcoPrincipal.getLamina().getTablaAutos().getSelectedRow(), 0);
@@ -125,6 +131,9 @@ public class Controller {
 					AUTO_DAO.eliminar(id);
 
 					recargar();
+					} else
+						JOptionPane.showMessageDialog(formulario, "Debe seleccionar una casilla.", "Advertencia",
+								JOptionPane.WARNING_MESSAGE);
 				} catch (SQLException e) {
 					JOptionPane.showMessageDialog(formulario, "Ha ocurrido un error interno.", "Error",
 							JOptionPane.ERROR_MESSAGE);
@@ -145,7 +154,7 @@ public class Controller {
 						// Cargo en auto todos los valores de la interfaz
 						auto.setId((Long) formulario.getLamina().getId().getValue());
 						auto.setAnio(((Number) formulario.getLamina().getAnio().getValue()).intValue());
-						auto.setCosto(Double.valueOf(formulario.getLamina().getCosto().getText()));
+						auto.setCosto(((Number) (formulario.getLamina().getCosto().getValue())).doubleValue());
 						auto.setMarca((String) formulario.getLamina().getMarca().getSelectedItem());
 						auto.setModelo(formulario.getLamina().getModelo().getText());
 						auto.setPropietario(formulario.getLamina().getPropietario().getText());
@@ -191,9 +200,11 @@ public class Controller {
 	 */
 	private void recargar() {
 		try {
+
 			// Vacio la tabla
 			while (marcoPrincipal.getLamina().getModelAutos().getRowCount() > 0)
 				marcoPrincipal.getLamina().getModelAutos().removeRow(0);
+
 			// Obtengo todos los valores registrados
 			List<Auto> lista;
 			lista = AUTO_DAO.getAll();

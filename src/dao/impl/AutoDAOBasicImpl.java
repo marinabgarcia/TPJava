@@ -16,13 +16,13 @@ public class AutoDAOBasicImpl implements AutoDAO{
 
 	// Crear un unico objeto AutoDAO
 	public static AutoDAOBasicImpl getAutoDAO() {
-		if (ref == null)
+		if (instancia == null)
 			// it's ok, we can call this constructor
-			ref = new AutoDAOBasicImpl();
-		return ref;
+			instancia = new AutoDAOBasicImpl();
+		return instancia;
 	}
 
-	private static AutoDAOBasicImpl ref;
+	private static AutoDAOBasicImpl instancia;
 
 	public List<Auto> getAll() {
 		return listaAutos;
@@ -38,7 +38,14 @@ public class AutoDAOBasicImpl implements AutoDAO{
 	}
 
 	public void insert(Auto auto) {
-		Long ultimoId = (long) listaAutos.size();
+		Long id=0L;
+		for(Auto a : listaAutos){
+			if(id < a.getId())
+				id = a.getId();
+		}
+		
+		Long ultimoId = id;
+		
 		auto.setId(ultimoId + 1);
 		listaAutos.add(auto);
 	}
