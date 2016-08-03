@@ -66,7 +66,7 @@ public class Controller {
 				// Vaciar los valores de auto en los componentes de la interfaz
 				formulario.getLamina().getId().setValue(null);
 				formulario.getLamina().getAnio().setValue(null);
-				formulario.getLamina().getCosto().setValue("");
+				formulario.getLamina().getCosto().setValue(null);
 				formulario.getLamina().getMarca().setSelectedItem("");
 				formulario.getLamina().getModelo().setText("");
 				formulario.getLamina().getPropietario().setText("");
